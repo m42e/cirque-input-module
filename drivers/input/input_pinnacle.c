@@ -478,6 +478,7 @@ static int pinnacle_init(const struct device *dev) {
     }
 
     LOG_ERR("P-C: 5");
+    return -5;
     ret = pinnacle_set_adc_tracking_sensitivity(dev);
     if (ret < 0) {
         LOG_ERR("Failed to set ADC sensitivity %d", ret);
@@ -491,7 +492,6 @@ static int pinnacle_init(const struct device *dev) {
         return ret;
     }
     LOG_ERR("P-C: 7");
-  return -5;
     ret = pinnacle_force_recalibrate(dev);
     if (ret < 0) {
         LOG_ERR("Failed to force recalibration %d", ret);
