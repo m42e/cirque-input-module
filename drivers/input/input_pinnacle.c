@@ -158,6 +158,7 @@ static int pinnacle_era_read(const struct device *dev, const uint16_t addr, uint
     }
 
     uint8_t control_val;
+    uint8_t retry_control = 20;
     do {
 
         ret = pinnacle_seq_read(dev, PINNACLE_REG_ERA_CONTROL, &control_val, 1);
@@ -165,9 +166,14 @@ static int pinnacle_era_read(const struct device *dev, const uint16_t addr, uint
             LOG_ERR("Failed to read ERA control (%d)", ret);
             return -EIO;
         }
+        retry_control -= 1;
 
-    } while (control_val != 0x00);
+    } while (control_val != 0x00 && retry_control > 0);
 
+    if (retry_control == 0){
+        LOG_ERR("timeout");
+    }
+  
     ret = pinnacle_seq_read(dev, PINNACLE_REG_ERA_VALUE, val, 1);
 
     if (ret < 0) {
@@ -212,6 +218,7 @@ static int pinnacle_era_write(const struct device *dev, const uint16_t addr, uin
     }
 
     uint8_t control_val;
+    uint8_t retry_control = 20;
     do {
 
         ret = pinnacle_seq_read(dev, PINNACLE_REG_ERA_CONTROL, &control_val, 1);
@@ -219,8 +226,14 @@ static int pinnacle_era_write(const struct device *dev, const uint16_t addr, uin
             LOG_ERR("Failed to read ERA control (%d)", ret);
             return -EIO;
         }
+        retry_control -= 1;
 
-    } while (control_val != 0x00);
+    } while (control_val != 0x00 && retry_control > 0);
+
+  
+    if (retry_control == 0){
+        LOG_ERR("timeout");
+    }
 
     ret = pinnacle_clear_status(dev);
 
@@ -389,10 +402,15 @@ static int pinnacle_force_recalibrate(const struct device *dev) {
     if (ret < 0) {
         LOG_ERR("Failed to force calibration %d", ret);
     }
-
+    uint8_t retry_control = 20;
+  
     do {
         pinnacle_seq_read(dev, PINNACLE_CAL_CFG, &val, 1);
-    } while (val & 0x01);
+    } while ((val & 0x01) && (--retry_control > 0));
+
+    if (retry_control == 0){
+        LOG_ERR("timeout");
+    }
 
     return ret;
 }
