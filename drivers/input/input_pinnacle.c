@@ -443,12 +443,15 @@ static int pinnacle_init(const struct device *dev) {
     struct pinnacle_data *data = dev->data;
     const struct pinnacle_config *config = dev->config;
     int ret;
+  
+    LOG_ERR("P-C: 1");
 
     uint8_t fw_id[2];
     ret = pinnacle_seq_read(dev, PINNACLE_FW_ID, fw_id, 2);
     if (ret < 0) {
         LOG_ERR("Failed to get the FW ID %d", ret);
     }
+    LOG_ERR("P-C: 2");
 
     LOG_DBG("Found device with FW ID: 0x%02x, Version: 0x%02x", fw_id[0], fw_id[1]);
   
@@ -461,6 +464,7 @@ static int pinnacle_init(const struct device *dev) {
         LOG_ERR("can't write %d", ret);
         return ret;
     }
+    LOG_ERR("P-C: 3");
     return -5;
     k_usleep(50);
     ret = pinnacle_write(dev, PINNACLE_SYS_CFG, PINNACLE_SYS_CFG_RESET);
