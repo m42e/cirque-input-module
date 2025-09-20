@@ -454,8 +454,6 @@ static int pinnacle_init(const struct device *dev) {
     LOG_ERR("P-C: 2");
 
     LOG_DBG("Found device with FW ID: 0x%02x, Version: 0x%02x", fw_id[0], fw_id[1]);
-  
-    LOG_ERR("Found device with FW ID: 0x%02x, Version: 0x%02x", fw_id[0], fw_id[1]);
 
     data->in_int = false;
     k_msleep(10);
@@ -465,7 +463,6 @@ static int pinnacle_init(const struct device *dev) {
         return ret;
     }
     LOG_ERR("P-C: 3");
-    return -5;
     k_usleep(50);
     ret = pinnacle_write(dev, PINNACLE_SYS_CFG, PINNACLE_SYS_CFG_RESET);
     if (ret < 0) {
@@ -473,35 +470,41 @@ static int pinnacle_init(const struct device *dev) {
         return ret;
     }
     k_msleep(20);
+    LOG_ERR("P-C: 4");
     ret = pinnacle_write(dev, PINNACLE_Z_IDLE, 0x05); // No Z-Idle packets
     if (ret < 0) {
         LOG_ERR("can't write %d", ret);
         return ret;
     }
 
+    LOG_ERR("P-C: 5");
     ret = pinnacle_set_adc_tracking_sensitivity(dev);
     if (ret < 0) {
         LOG_ERR("Failed to set ADC sensitivity %d", ret);
         return ret;
     }
+    LOG_ERR("P-C: 6");
 
     ret = pinnacle_tune_edge_sensitivity(dev);
     if (ret < 0) {
         LOG_ERR("Failed to tune edge sensitivity %d", ret);
         return ret;
     }
+    LOG_ERR("P-C: 7");
     ret = pinnacle_force_recalibrate(dev);
     if (ret < 0) {
         LOG_ERR("Failed to force recalibration %d", ret);
         return ret;
     }
 
+    LOG_ERR("P-C: 8");
     if (config->sleep_en) {
         ret = pinnacle_set_sleep(dev, true);
         if (ret < 0) {
             return ret;
         }
     }
+    LOG_ERR("P-C: 9");
 
     uint8_t packet[1];
     ret = pinnacle_seq_read(dev, PINNACLE_SLEEP_INTERVAL, packet, 1);
@@ -510,6 +513,7 @@ static int pinnacle_init(const struct device *dev) {
         LOG_DBG("Default sleep interval %d", packet[0]);
     }
 
+    LOG_ERR("P-C: A");
     ret = pinnacle_write(dev, PINNACLE_SLEEP_INTERVAL, 255);
     if (ret <= 0) {
         LOG_DBG("Failed to update sleep interaval %d", ret);
@@ -550,6 +554,7 @@ static int pinnacle_init(const struct device *dev) {
 
     data->dev = dev;
 
+    LOG_ERR("P-C: B");
     pinnacle_clear_status(dev);
 
     gpio_pin_configure_dt(&config->dr, GPIO_INPUT);
@@ -560,6 +565,7 @@ static int pinnacle_init(const struct device *dev) {
         return -EIO;
     }
 
+    LOG_ERR("P-C: C");
     k_work_init(&data->work, pinnacle_work_cb);
 
     pinnacle_write(dev, PINNACLE_FEED_CFG1, feed_cfg1);
