@@ -451,6 +451,8 @@ static int pinnacle_init(const struct device *dev) {
     }
 
     LOG_DBG("Found device with FW ID: 0x%02x, Version: 0x%02x", fw_id[0], fw_id[1]);
+  
+    LOG_ERR("Found device with FW ID: 0x%02x, Version: 0x%02x", fw_id[0], fw_id[1]);
 
     data->in_int = false;
     k_msleep(10);
