@@ -376,10 +376,11 @@ static int pinnacle_set_adc_tracking_sensitivity(const struct device *dev) {
         LOG_ERR("Failed to get ADC sensitivity %d", ret);
     }
     LOG_ERR("P-C: 5B");
+    return -5;
     val &= 0x3F;
     val |= pinnacle_adc_sensitivity_reg_value(config->sensitivity);
     LOG_ERR("P-C: 5C");
-    return -5;
+    
 
     ret = pinnacle_era_write(dev, PINNACLE_ERA_REG_TRACKING_ADC_CONFIG, val);
     if (ret < 0) {
